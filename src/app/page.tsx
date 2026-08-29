@@ -190,7 +190,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="flex flex-col w-full lg:h-[calc(100vh-4rem)] overflow-hidden">
       {/* Dismissible Hero Banner */}
       <AnimatePresence>
         {showBanner && (
