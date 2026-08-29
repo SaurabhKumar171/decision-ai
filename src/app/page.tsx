@@ -157,19 +157,25 @@ export default function Home() {
     setIsExporting(true);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = document.getElementById("pdf-export-container");
+      const element = document.getElementById("pdf-memo-template");
       
       if (!element) return;
       
+      // Temporarily reveal for rendering
+      element.style.display = "block";
+      
       const opt = {
-        margin: 10,
+        margin: 15,
         filename: 'Decision_Memo.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        image: { type: 'jpeg' as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
       };
 
       await html2pdf().from(element).set(opt).save();
+      
+      // Hide again
+      element.style.display = "none";
     } catch (err) {
       console.error("Failed to generate PDF", err);
     } finally {
@@ -753,6 +759,85 @@ export default function Home() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Hidden PDF Template */}
+      {decision && (
+        <div
+          id="pdf-memo-template"
+          style={{
+            display: "none",
+            width: "800px",
+            backgroundColor: "#ffffff",
+            color: "#000000",
+            fontFamily: "sans-serif",
+            padding: "40px",
+          }}
+        >
+          {/* Header */}
+          <div style={{ borderBottom: "2px solid #eaeaea", paddingBottom: "20px", marginBottom: "30px" }}>
+            <h1 style={{ fontSize: "32px", margin: "0 0 10px 0", color: "#111827" }}>Decision Memo</h1>
+            <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
+              Generated on {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}
+            </p>
+          </div>
+
+          {/* Primary Recommendation */}
+          <div style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "24px", marginBottom: "30px" }}>
+            <h2 style={{ fontSize: "14px", textTransform: "uppercase", color: "#4f46e5", letterSpacing: "1px", margin: "0 0 12px 0" }}>
+              Primary Recommendation
+            </h2>
+            <p style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: "#111827" }}>
+              {decision.primaryRecommendation}
+            </p>
+          </div>
+
+          {/* 2-Column Details */}
+          <div style={{ display: "flex", gap: "30px", marginBottom: "40px" }}>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 16px 0", color: "#111827", borderBottom: "1px solid #eaeaea", paddingBottom: "8px" }}>
+                Why It Fits
+              </h3>
+              <p style={{ fontSize: "14px", lineHeight: "1.6", margin: 0, color: "#374151" }}>
+                {decision.whyItFits}
+              </p>
+            </div>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 16px 0", color: "#111827", borderBottom: "1px solid #eaeaea", paddingBottom: "8px" }}>
+                Trade-offs Accepted
+              </h3>
+              <ul style={{ margin: 0, padding: "0 0 0 20px", color: "#374151", fontSize: "14px", lineHeight: "1.6" }}>
+                {decision.tradeoffsAccepted.map((tradeoff, i) => (
+                  <li key={i} style={{ marginBottom: "8px" }}>{tradeoff}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Resources */}
+          {resources && resources.length > 0 && (
+            <div>
+              <h3 style={{ fontSize: "20px", fontWeight: "bold", margin: "0 0 20px 0", color: "#111827", borderBottom: "2px solid #eaeaea", paddingBottom: "10px" }}>
+                Curated Live Resources
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {resources.map((resource, index) => (
+                  <div key={index} style={{ border: "1px solid #e5e7eb", borderRadius: "8px", padding: "16px", breakInside: "avoid" }}>
+                    <h4 style={{ fontSize: "16px", fontWeight: "bold", margin: "0 0 8px 0", color: "#111827" }}>
+                      {resource.title}
+                    </h4>
+                    <p style={{ fontSize: "14px", lineHeight: "1.5", margin: "0 0 12px 0", color: "#4b5563" }}>
+                      {resource.snippet}
+                    </p>
+                    <a href={resource.url} style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", wordBreak: "break-all" }}>
+                      {resource.url}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
