@@ -45,4 +45,13 @@ Once the decision is made, the engine doesn't leave you hanging. It autonomously
 
 ---
 
+## 🔮 Vision & Multi-Domain Roadmap
+While the current MVP focuses on tech careers and education paths, **DecisionMind AI** is architected as a domain-agnostic decision engine. 
+
+The core two-tier framework (Gemini reasoning engine + SkillPatch action execution) can scale to any domain where choice paralysis occurs:
+* 💼 **Career & Education (Current):** Navigating role pivots, skill roadmaps, and interview strategy.
+* 💰 **Personal Finance & Investments:** Evaluating asset allocations, budget trade-offs, and tool selection.
+* 🏋️ **Health & Wellness:** Structuring personalized training regimens, diet trade-offs, and supplement stacks.
+* 🏗️ **Architecture & Tech Stacks:** Selecting enterprise cloud infrastructure, frameworks, and database choices.
+
 *“One Decision. Zero Fluff.”*
