@@ -51,6 +51,24 @@ export async function POST(req: Request) {
     return NextResponse.json(object);
   } catch (error) {
     console.error("Error generating decision:", error);
+
+    const isRateLimited =
+      error?.statusCode === 429 ||
+      error?.status === 429 ||
+      error?.message?.includes("429") ||
+      error?.message?.includes("RESOURCE_EXHAUSTED");
+
+    if (isRateLimited) {
+      return NextResponse.json(
+        {
+          error: "Rate limit reached. The AI service is currently busy.",
+          isRateLimited: true,
+          retryAfter: 35,
+        },
+        { status: 429 },
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to generate a decision. Please try again." },
       { status: 500 },

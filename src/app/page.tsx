@@ -110,6 +110,18 @@ export default function Home() {
       if (!response.ok) throw new Error("Failed to generate decision");
 
       const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(
+            `Quota limit reached! Please wait about ${data.retryAfter || 35} seconds before trying again.`,
+          );
+        } else {
+          setError(data.error || "Failed to generate decision.");
+        }
+        return;
+      }
+
       setDecision(data);
     } catch (err) {
       setError("Oops! Something went wrong. Please try again.");
@@ -157,25 +169,19 @@ export default function Home() {
     setIsExporting(true);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = document.getElementById("pdf-memo-template");
-      
+      const element = document.getElementById("pdf-export-container");
+
       if (!element) return;
-      
-      // Temporarily reveal for rendering
-      element.style.display = "block";
-      
+
       const opt = {
-        margin: 15,
-        filename: 'Decision_Memo.pdf',
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+        margin: 10,
+        filename: "Decision_Memo.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       };
 
       await html2pdf().from(element).set(opt).save();
-      
-      // Hide again
-      element.style.display = "none";
     } catch (err) {
       console.error("Failed to generate PDF", err);
     } finally {
@@ -588,7 +594,11 @@ export default function Home() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
+                      transition={{
+                        duration: 0.5,
+                        type: "spring",
+                        bounce: 0.3,
+                      }}
                       className="w-full relative group rounded-xl"
                     >
                       <div className="absolute -inset-0.5 bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-teal-500/30 rounded-xl opacity-30 blur-md"></div>
@@ -681,163 +691,89 @@ export default function Home() {
                   )}
 
                   {/* Resources Results Card */}
-                  {resources && resources.length > 0 && !isFetchingResources && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="space-y-6 pt-6 border-t border-border/40"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                          <Network className="w-6 h-6 text-blue-500" />
-                          Curated Live Resources
-                        </h3>
-                        <p className="text-xs font-medium text-muted-foreground flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                          </span>
-                          Powered by SkillPatch / DeepAPI
-                        </p>
-                      </div>
-
+                  {resources &&
+                    resources.length > 0 &&
+                    !isFetchingResources && (
                       <motion.div
-                        variants={{
-                          show: { transition: { staggerChildren: 0.1 } },
-                        }}
-                        initial="hidden"
-                        animate="show"
-                        className="grid gap-4 md:grid-cols-2"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-6 pt-6 border-t border-border/40"
                       >
-                        {resources.map((resource, index) => (
-                          <motion.div
-                            key={index}
-                            variants={{
-                              hidden: { opacity: 0, y: 20 },
-                              show: {
-                                opacity: 1,
-                                y: 0,
-                                transition: { type: "spring", bounce: 0.4 },
-                              },
-                            }}
-                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                            className="h-full"
-                          >
-                            <Card className="flex flex-col h-full bg-card/80 backdrop-blur-sm border-border/50 hover:border-blue-500/40 shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
-                              <CardContent className="p-5 flex-grow space-y-3">
-                                <div className="flex items-start justify-between gap-2">
-                                  <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors">
-                                    {resource.title}
-                                  </h4>
-                                  <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                            <Network className="w-6 h-6 text-blue-500" />
+                            Curated Live Resources
+                          </h3>
+                          <p className="text-xs font-medium text-muted-foreground flex  gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 items-center justify-between">
+                            <span className="relative flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            </span>
+                            Powered by SkillPatch / DeepAPI
+                          </p>
+                        </div>
+
+                        <motion.div
+                          variants={{
+                            show: { transition: { staggerChildren: 0.1 } },
+                          }}
+                          initial="hidden"
+                          animate="show"
+                          className="grid gap-4 md:grid-cols-2"
+                        >
+                          {resources.map((resource, index) => (
+                            <motion.div
+                              key={index}
+                              variants={{
+                                hidden: { opacity: 0, y: 20 },
+                                show: {
+                                  opacity: 1,
+                                  y: 0,
+                                  transition: { type: "spring", bounce: 0.4 },
+                                },
+                              }}
+                              whileHover={{
+                                y: -4,
+                                transition: { duration: 0.2 },
+                              }}
+                              className="h-full"
+                            >
+                              <Card className="flex flex-col h-full bg-card/80 backdrop-blur-sm border-border/50 hover:border-blue-500/40 shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
+                                <CardContent className="p-5 flex-grow space-y-3">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors py-2">
+                                      {resource.title}
+                                    </h4>
+                                    <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                  </div>
+                                  <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                                    {resource.snippet}
+                                  </p>
+                                </CardContent>
+                                <div className="p-4 pt-0 mt-auto">
+                                  <a
+                                    href={resource.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex w-full items-center justify-center rounded-lg bg-secondary/50 border border-border/50 px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted hover:text-blue-500 transition-all group/link"
+                                  >
+                                    Open Resource
+                                    <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover/link:opacity-100 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
+                                  </a>
                                 </div>
-                                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                                  {resource.snippet}
-                                </p>
-                              </CardContent>
-                              <div className="p-4 pt-0 mt-auto">
-                                <a
-                                  href={resource.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex w-full items-center justify-center rounded-lg bg-secondary/50 border border-border/50 px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted hover:text-blue-500 transition-all group/link"
-                                >
-                                  Open Resource
-                                  <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover/link:opacity-100 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
-                                </a>
-                              </div>
-                            </Card>
-                          </motion.div>
-                        ))}
+                              </Card>
+                            </motion.div>
+                          ))}
+                        </motion.div>
                       </motion.div>
-                    </motion.div>
-                  )}
+                    )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
-
-      {/* Hidden PDF Template */}
-      {decision && (
-        <div
-          id="pdf-memo-template"
-          style={{
-            display: "none",
-            width: "800px",
-            backgroundColor: "#ffffff",
-            color: "#000000",
-            fontFamily: "sans-serif",
-            padding: "40px",
-          }}
-        >
-          {/* Header */}
-          <div style={{ borderBottom: "2px solid #eaeaea", paddingBottom: "20px", marginBottom: "30px" }}>
-            <h1 style={{ fontSize: "32px", margin: "0 0 10px 0", color: "#111827" }}>Decision Memo</h1>
-            <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
-              Generated on {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}
-            </p>
-          </div>
-
-          {/* Primary Recommendation */}
-          <div style={{ backgroundColor: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "24px", marginBottom: "30px" }}>
-            <h2 style={{ fontSize: "14px", textTransform: "uppercase", color: "#4f46e5", letterSpacing: "1px", margin: "0 0 12px 0" }}>
-              Primary Recommendation
-            </h2>
-            <p style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: "#111827" }}>
-              {decision.primaryRecommendation}
-            </p>
-          </div>
-
-          {/* 2-Column Details */}
-          <div style={{ display: "flex", gap: "30px", marginBottom: "40px" }}>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 16px 0", color: "#111827", borderBottom: "1px solid #eaeaea", paddingBottom: "8px" }}>
-                Why It Fits
-              </h3>
-              <p style={{ fontSize: "14px", lineHeight: "1.6", margin: 0, color: "#374151" }}>
-                {decision.whyItFits}
-              </p>
-            </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: "18px", fontWeight: "bold", margin: "0 0 16px 0", color: "#111827", borderBottom: "1px solid #eaeaea", paddingBottom: "8px" }}>
-                Trade-offs Accepted
-              </h3>
-              <ul style={{ margin: 0, padding: "0 0 0 20px", color: "#374151", fontSize: "14px", lineHeight: "1.6" }}>
-                {decision.tradeoffsAccepted.map((tradeoff, i) => (
-                  <li key={i} style={{ marginBottom: "8px" }}>{tradeoff}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Resources */}
-          {resources && resources.length > 0 && (
-            <div>
-              <h3 style={{ fontSize: "20px", fontWeight: "bold", margin: "0 0 20px 0", color: "#111827", borderBottom: "2px solid #eaeaea", paddingBottom: "10px" }}>
-                Curated Live Resources
-              </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                {resources.map((resource, index) => (
-                  <div key={index} style={{ border: "1px solid #e5e7eb", borderRadius: "8px", padding: "16px", breakInside: "avoid" }}>
-                    <h4 style={{ fontSize: "16px", fontWeight: "bold", margin: "0 0 8px 0", color: "#111827" }}>
-                      {resource.title}
-                    </h4>
-                    <p style={{ fontSize: "14px", lineHeight: "1.5", margin: "0 0 12px 0", color: "#4b5563" }}>
-                      {resource.snippet}
-                    </p>
-                    <a href={resource.url} style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", wordBreak: "break-all" }}>
-                      {resource.url}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
