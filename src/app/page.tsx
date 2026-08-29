@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Brain,
-  Target,
-  SlidersHorizontal,
-  CheckCircle2,
+import { 
+  Brain, 
+  Target, 
+  SlidersHorizontal, 
+  CheckCircle2, 
   AlertTriangle,
   ArrowRight,
   ExternalLink,
@@ -19,8 +19,7 @@ import {
   Network,
   Copy,
   RotateCcw,
-  X,
-  Lightbulb,
+  X
 } from "lucide-react";
 import {
   Card,
@@ -159,10 +158,10 @@ export default function Home() {
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2000);
   };
-
   return (
     <div className="flex flex-col w-full min-h-[calc(100vh-4rem)] overflow-x-hidden">
-      {/* Context & Value Banner */}
+      
+      {/* Top Hero Banner */}
       <AnimatePresence>
         {showBanner && (
           <motion.div
@@ -170,85 +169,29 @@ export default function Home() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0, overflow: "hidden" }}
             transition={{ duration: 0.3 }}
-            className="w-full relative z-40 border-b border-accent/20 bg-accent/5 backdrop-blur-md"
+            className="w-full relative z-40 border-b border-border/40 bg-background/80 backdrop-blur-md"
           >
-            <div className="max-w-6xl mx-auto px-4 py-6 relative flex flex-col items-center">
+            <div className="max-w-7xl mx-auto px-4 py-8 md:py-12 relative flex flex-col items-center justify-center text-center">
               <button
                 onClick={() => setShowBanner(false)}
-                className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors"
+                className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-full transition-colors"
                 aria-label="Dismiss banner"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
-
-              <div className="inline-flex items-center justify-center mb-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-accent-foreground/70 bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">
-                  Problem Solved
+              
+              <div className="inline-flex items-center justify-center p-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-4">
+                <span className="flex items-center text-[10px] md:text-xs font-bold uppercase tracking-wider px-2 py-0.5">
+                  <span className="mr-1.5 text-sm">⚡</span>
+                  Anti-Analysis Paralysis
                 </span>
               </div>
-
-              <h2 className="text-xl md:text-2xl font-bold tracking-tight mb-2 text-center">
-                More Information Isn't Helping You Decide.
-              </h2>
-              
-              <p className="text-sm text-muted-foreground text-center max-w-2xl mb-6">
-                Search engines give you 100 tabs. Chatbots give you endless lists. DecisionMind cuts through the noise to make one definitive call based on your exact constraints.
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 pb-2 mb-4">
+                One Decision. Zero Fluff.
+              </h1>
+              <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed">
+                Search engines give you 100 tabs. AI chatbots give you lists of options. <strong className="text-foreground">DecisionMind</strong> evaluates your exact constraints and makes ONE definitive choice for you.
               </p>
-              
-              <div className="flex flex-col md:flex-row gap-4 w-full max-w-4xl justify-center mb-6">
-                {/* Left Comparison Badge */}
-                <div className="flex-1 rounded-xl border border-red-500/20 bg-red-500/5 p-5 shadow-sm">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="text-red-500 text-lg">❌</div>
-                    <h3 className="font-semibold text-foreground/90">Traditional Search & Chat</h3>
-                  </div>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-red-500/70 mt-0.5">•</span>
-                      <span>Drops 10+ options on you</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-red-500/70 mt-0.5">•</span>
-                      <span>Ignores your time & budget</span>
-                    </li>
-                    <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="text-red-500/70 mt-0.5">•</span>
-                      <span>Leaves you in analysis paralysis</span>
-                    </li>
-                  </ul>
-                </div>
-                
-                {/* Right Comparison Badge */}
-                <div className="flex-1 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5 shadow-md relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="text-emerald-500 text-lg">⚡</div>
-                      <h3 className="font-semibold text-emerald-700 dark:text-emerald-400">DecisionMind AI + SkillPatch</h3>
-                    </div>
-                    <ul className="space-y-2">
-                      <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-emerald-500/70 mt-0.5">•</span>
-                        <span><strong className="font-medium text-foreground">1 Clear Recommendation</strong> (no fluff)</span>
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-emerald-500/70 mt-0.5">•</span>
-                        <span>Custom-fit to your exact constraints</span>
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <span className="text-emerald-500/70 mt-0.5">•</span>
-                        <span>Automated live action links</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Micro Action Bar */}
-              <div className="flex items-center gap-2 text-xs font-semibold text-foreground/80">
-                <ArrowRight className="w-4 h-4 rotate-90 text-primary animate-bounce" />
-                <span>Try a 1-click test scenario below to see it in action</span>
-              </div>
             </div>
           </motion.div>
         )}
@@ -266,57 +209,46 @@ export default function Home() {
         </div>
 
         {/* Left Panel - Control Panel */}
-        <div className="w-full lg:w-[35%] lg:min-w-[400px] lg:max-w-[500px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-6 md:p-8 lg:p-10 flex flex-col relative z-20 shadow-2xl lg:shadow-none">
-          <div className="lg:sticky lg:top-8 space-y-8 h-full">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-3"
-            >
-              <div className="inline-flex items-center justify-center p-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 backdrop-blur-md">
-                <span className="flex items-center text-xs font-semibold px-2 py-0.5">
-                  <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                  AI Control Panel
-                </span>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 pb-1">
-                Set Trajectory
-              </h1>
-              <p className="text-sm md:text-base text-muted-foreground font-medium">
-                Define your parameters. Our engine will map the optimal path.
-              </p>
-            </motion.div>
+        <div className="w-full lg:w-[35%] lg:min-w-[400px] lg:max-w-[480px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-6 md:p-8 flex flex-col relative z-20 shadow-2xl lg:shadow-none overflow-y-auto">
+          <div className="space-y-6 w-full h-full flex flex-col">
+            
+            <div className="flex items-center gap-2 pb-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-bold tracking-tight">Set Trajectory</h2>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative group rounded-xl transition-all duration-300 flex-grow"
+              className="relative group transition-all duration-300 flex-grow flex flex-col"
             >
-              <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-10 group-focus-within:opacity-30 transition duration-500 blur-sm"></div>
-              <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-xl overflow-hidden h-full flex flex-col">
-                <form onSubmit={handleSubmit} className="flex flex-col h-full">
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md pointer-events-none"></div>
+              <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-xl overflow-hidden flex-grow flex flex-col">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col h-full"
+                >
                   <CardContent className="space-y-6 p-6 flex-grow">
-                    <div className="space-y-3 relative group/field">
+                    <div className="space-y-2 relative group/field">
                       <label
                         htmlFor="skills"
                         className="text-sm font-semibold flex items-center gap-2 group-hover/field:text-primary transition-colors"
                       >
                         <Brain className="w-4 h-4 text-purple-500" />
-                        Current Skills & Assets
+                        Current Skills
                       </label>
                       <Input
                         id="skills"
-                        placeholder="e.g. React, TypeScript, 3 YOE"
+                        placeholder="e.g. React, 3 YOE"
                         value={skills}
                         onChange={(e) => setSkills(e.target.value)}
                         required
-                        className="h-12 bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm"
+                        className="h-11 bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm"
                       />
                     </div>
 
-                    <div className="space-y-3 relative group/field">
+                    <div className="space-y-2 relative group/field">
                       <label
                         htmlFor="goal"
                         className="text-sm font-semibold flex items-center gap-2 group-hover/field:text-primary transition-colors"
@@ -326,26 +258,26 @@ export default function Home() {
                       </label>
                       <Input
                         id="goal"
-                        placeholder="e.g. Senior Frontend Engineer"
+                        placeholder="e.g. Senior Engineer"
                         value={goal}
                         onChange={(e) => setGoal(e.target.value)}
                         required
-                        className="h-12 bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm"
+                        className="h-11 bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm"
                       />
                     </div>
 
-                    <div className="space-y-3 relative group/field pb-2">
+                    <div className="space-y-2 relative group/field pb-1">
                       <label
                         htmlFor="constraints"
                         className="text-sm font-semibold flex items-center gap-2 group-hover/field:text-primary transition-colors"
                       >
                         <SlidersHorizontal className="w-4 h-4 text-indigo-500" />
-                        Constraints & Preferences
+                        Constraints
                       </label>
                       <Textarea
                         id="constraints"
-                        placeholder="e.g. Need to learn part-time, budget is $500, looking for remote only..."
-                        className="resize-none min-h-[120px] bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm py-3"
+                        placeholder="e.g. Budget is $500, looking for remote..."
+                        className="resize-none min-h-[120px] bg-background/50 border-muted-foreground/20 focus-visible:ring-primary/50 transition-all shadow-sm py-2.5"
                         value={constraints}
                         onChange={(e) => setConstraints(e.target.value)}
                         required
@@ -357,7 +289,7 @@ export default function Home() {
                     <Button
                       type="submit"
                       size="lg"
-                      className="w-full text-base font-bold h-14 relative overflow-hidden group/btn bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(var(--foreground-rgb),0.1)] hover:shadow-[0_0_30px_rgba(var(--foreground-rgb),0.2)] transition-all"
+                      className="w-full text-base font-bold h-12 relative overflow-hidden group/btn bg-foreground text-background hover:bg-foreground/90 shadow-[0_0_20px_rgba(var(--foreground-rgb),0.1)] hover:shadow-[0_0_30px_rgba(var(--foreground-rgb),0.2)] transition-all"
                       disabled={isLoading || isFetchingResources}
                     >
                       {isLoading || isFetchingResources ? (
@@ -380,7 +312,7 @@ export default function Home() {
                         </span>
                       )}
                       {/* Subtle hover gradient effect on button */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none"></div>
                     </Button>
                   </CardFooter>
                 </form>
@@ -406,19 +338,17 @@ export default function Home() {
                     <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-20 blur-xl animate-pulse"></div>
                     <Compass className="w-10 h-10 text-primary drop-shadow-md relative z-10" />
                   </div>
-                  <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                    Interactive Decision Workspace
-                  </h2>
-                  <p className="text-muted-foreground text-lg max-w-lg">
-                    Input your dilemma on the left, or pick a pre-loaded
-                    scenario below to test instantly.
-                  </p>
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-bold tracking-tight text-foreground">
+                      1-Click Demo Presets
+                    </h2>
+                    <p className="text-muted-foreground text-lg max-w-lg">
+                      Click any scenario below to test the engine instantly.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="w-full space-y-4">
-                  <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground text-center mb-4">
-                    Test Drive Scenarios
-                  </h3>
+                <div className="w-full space-y-4 pt-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <motion.button
                       whileHover={{ scale: 1.03, y: -2 }}
@@ -430,16 +360,17 @@ export default function Home() {
                           "10 hrs/week, $500 budget for courses",
                         )
                       }
-                      className="p-4 rounded-xl border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-500/10 text-left space-y-2 transition-colors relative overflow-hidden group"
+                      className="p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
                     >
                       <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <Zap className="w-12 h-12 text-indigo-500 -mr-4 -mt-4 rotate-12" />
+                        <Zap className="w-16 h-16 text-indigo-500 -mr-4 -mt-4 rotate-12" />
                       </div>
-                      <div className="font-bold text-foreground flex items-center gap-2">
+                      <div className="font-bold text-foreground flex items-center gap-2 text-lg">
                         <span>🚀</span> FAANG AI Transition
                       </div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Skills: React/Node.js • Goal: FAANG AI Eng •
+                      <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
+                        Skills: React/Node.js<br/>
+                        Goal: FAANG AI Eng<br/>
                         Constraints: 10 hrs/wk, $500
                       </div>
                     </motion.button>
@@ -454,17 +385,18 @@ export default function Home() {
                           "Solo dev, $0 infra budget",
                         )
                       }
-                      className="p-4 rounded-xl border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-left space-y-2 transition-colors relative overflow-hidden group"
+                      className="p-5 rounded-xl border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
                     >
                       <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <Code2 className="w-12 h-12 text-purple-500 -mr-4 -mt-4 rotate-12" />
+                        <Code2 className="w-16 h-16 text-purple-500 -mr-4 -mt-4 rotate-12" />
                       </div>
-                      <div className="font-bold text-foreground flex items-center gap-2">
+                      <div className="font-bold text-foreground flex items-center gap-2 text-lg">
                         <span>💻</span> Solo SaaS Stack
                       </div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Skills: Python • Goal: Launch in 30d • Constraints:
-                        Solo, $0 budget
+                      <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
+                        Skills: Python<br/>
+                        Goal: Launch in 30d<br/>
+                        Constraints: Solo, $0 budget
                       </div>
                     </motion.button>
 
@@ -478,17 +410,18 @@ export default function Home() {
                           "No math background, self-paced learning",
                         )
                       }
-                      className="p-4 rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 text-left space-y-2 transition-colors relative overflow-hidden group"
+                      className="p-5 rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
                     >
                       <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <GraduationCap className="w-12 h-12 text-pink-500 -mr-4 -mt-4 rotate-12" />
+                        <GraduationCap className="w-16 h-16 text-pink-500 -mr-4 -mt-4 rotate-12" />
                       </div>
-                      <div className="font-bold text-foreground flex items-center gap-2">
+                      <div className="font-bold text-foreground flex items-center gap-2 text-lg">
                         <span>🎓</span> Analyst to ML
                       </div>
-                      <div className="text-xs text-muted-foreground line-clamp-2">
-                        Skills: SQL/Excel • Goal: ML Engineer • Constraints: No
-                        math bg
+                      <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
+                        Skills: SQL/Excel<br/>
+                        Goal: ML Engineer<br/>
+                        Constraints: No math bg
                       </div>
                     </motion.button>
                   </div>
