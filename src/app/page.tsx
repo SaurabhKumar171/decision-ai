@@ -20,6 +20,7 @@ import {
   Copy,
   RotateCcw,
   X,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -58,6 +59,7 @@ export default function Home() {
   >(null);
   const [isFetchingResources, setIsFetchingResources] = useState(false);
   const [resourceError, setResourceError] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   // Auto-trigger Effect
   useEffect(() => {
@@ -149,6 +151,30 @@ export default function Home() {
     navigator.clipboard.writeText(text);
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2000);
+  };
+
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      const element = document.getElementById("pdf-export-container");
+      
+      if (!element) return;
+      
+      const opt = {
+        margin: 10,
+        filename: 'Decision_Memo.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      await html2pdf().from(element).set(opt).save();
+    } catch (err) {
+      console.error("Failed to generate PDF", err);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -470,6 +496,20 @@ export default function Home() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={handleExportPDF}
+                        disabled={isExporting}
+                        className="h-9 gap-1.5 font-medium"
+                      >
+                        {isExporting ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Download className="w-3.5 h-3.5" />
+                        )}
+                        {isExporting ? "Generating PDF..." : "Export PDF"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={copyToClipboard}
                         className="h-9 gap-1.5 font-medium"
                       >
@@ -503,209 +543,211 @@ export default function Home() {
                   </motion.div>
                 )}
 
-                {/* Decision Skeleton */}
-                {isLoading && !decision && (
-                  <div className="w-full relative group rounded-xl">
-                    <div className="absolute -inset-0.5 bg-gradient-to-br from-muted to-muted/50 rounded-xl opacity-20 blur-sm animate-pulse"></div>
-                    <Card className="relative border-border/50 bg-card/80 backdrop-blur-xl shadow-xl overflow-hidden">
-                      <div className="bg-primary/5 border-b border-border/50 p-6 md:p-8 space-y-4">
-                        <div className="h-4 w-32 bg-muted/60 rounded-md animate-pulse"></div>
-                        <div className="h-8 w-3/4 bg-muted/80 rounded-md animate-pulse"></div>
-                        <div className="h-8 w-1/2 bg-muted/80 rounded-md animate-pulse"></div>
-                      </div>
-                      <CardContent className="p-6 md:p-8 space-y-8">
-                        <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-4">
-                            <div className="h-6 w-40 bg-muted/60 rounded-md animate-pulse"></div>
-                            <div className="space-y-2">
-                              <div className="h-4 w-full bg-muted/40 rounded-md animate-pulse delay-75"></div>
-                              <div className="h-4 w-full bg-muted/40 rounded-md animate-pulse delay-100"></div>
-                              <div className="h-4 w-5/6 bg-muted/40 rounded-md animate-pulse delay-150"></div>
-                            </div>
-                          </div>
-                          <div className="space-y-4">
-                            <div className="h-6 w-48 bg-muted/60 rounded-md animate-pulse"></div>
-                            <div className="space-y-3">
-                              <div className="h-10 w-full bg-muted/30 rounded-lg animate-pulse delay-75"></div>
-                              <div className="h-10 w-full bg-muted/30 rounded-lg animate-pulse delay-100"></div>
-                            </div>
-                          </div>
+                <div id="pdf-export-container" className="space-y-8 pb-4">
+                  {/* Decision Skeleton */}
+                  {isLoading && !decision && (
+                    <div className="w-full relative group rounded-xl">
+                      <div className="absolute -inset-0.5 bg-gradient-to-br from-muted to-muted/50 rounded-xl opacity-20 blur-sm animate-pulse"></div>
+                      <Card className="relative border-border/50 bg-card/80 backdrop-blur-xl shadow-xl overflow-hidden">
+                        <div className="bg-primary/5 border-b border-border/50 p-6 md:p-8 space-y-4">
+                          <div className="h-4 w-32 bg-muted/60 rounded-md animate-pulse"></div>
+                          <div className="h-8 w-3/4 bg-muted/80 rounded-md animate-pulse"></div>
+                          <div className="h-8 w-1/2 bg-muted/80 rounded-md animate-pulse"></div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
+                        <CardContent className="p-6 md:p-8 space-y-8">
+                          <div className="grid md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                              <div className="h-6 w-40 bg-muted/60 rounded-md animate-pulse"></div>
+                              <div className="space-y-2">
+                                <div className="h-4 w-full bg-muted/40 rounded-md animate-pulse delay-75"></div>
+                                <div className="h-4 w-full bg-muted/40 rounded-md animate-pulse delay-100"></div>
+                                <div className="h-4 w-5/6 bg-muted/40 rounded-md animate-pulse delay-150"></div>
+                              </div>
+                            </div>
+                            <div className="space-y-4">
+                              <div className="h-6 w-48 bg-muted/60 rounded-md animate-pulse"></div>
+                              <div className="space-y-3">
+                                <div className="h-10 w-full bg-muted/30 rounded-lg animate-pulse delay-75"></div>
+                                <div className="h-10 w-full bg-muted/30 rounded-lg animate-pulse delay-100"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  )}
 
-                {/* Decision Result Card */}
-                {decision && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
-                    className="w-full relative group rounded-xl"
-                  >
-                    <div className="absolute -inset-0.5 bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-teal-500/30 rounded-xl opacity-30 blur-md"></div>
-                    <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-2xl overflow-hidden">
-                      <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-b border-border/50 p-6 md:p-8 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-                        <h3 className="text-xs font-bold tracking-widest text-primary uppercase mb-3 flex items-center gap-2">
-                          <Target className="w-3.5 h-3.5" />
-                          Primary Recommendation
+                  {/* Decision Result Card */}
+                  {decision && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
+                      className="w-full relative group rounded-xl"
+                    >
+                      <div className="absolute -inset-0.5 bg-gradient-to-br from-green-500/30 via-emerald-500/20 to-teal-500/30 rounded-xl opacity-30 blur-md"></div>
+                      <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-2xl overflow-hidden">
+                        <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-b border-border/50 p-6 md:p-8 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+                          <h3 className="text-xs font-bold tracking-widest text-primary uppercase mb-3 flex items-center gap-2">
+                            <Target className="w-3.5 h-3.5" />
+                            Primary Recommendation
+                          </h3>
+                          <p className="text-2xl md:text-3xl font-bold leading-tight text-foreground">
+                            {decision.primaryRecommendation}
+                          </p>
+                        </div>
+
+                        <CardContent className="p-0">
+                          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/50">
+                            <div className="p-6 md:p-8 space-y-4 bg-background/30">
+                              <h4 className="font-bold text-lg flex items-center gap-2 text-foreground">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                Why It Fits
+                              </h4>
+                              <p className="text-muted-foreground leading-relaxed text-base">
+                                {decision.whyItFits}
+                              </p>
+                            </div>
+
+                            <div className="p-6 md:p-8 space-y-4 bg-background/30">
+                              <h4 className="font-bold text-lg flex items-center gap-2 text-foreground">
+                                <AlertTriangle className="w-5 h-5 text-amber-500" />
+                                Trade-offs Accepted
+                              </h4>
+                              <ul className="space-y-3">
+                                {decision.tradeoffsAccepted.map(
+                                  (tradeoff, index) => (
+                                    <motion.li
+                                      initial={{ opacity: 0, x: 10 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: 0.1 * index }}
+                                      key={index}
+                                      className="flex items-start gap-3 text-muted-foreground bg-card p-3 rounded-lg border border-border/40 shadow-sm"
+                                    >
+                                      <div className="mt-1 w-1.5 h-1.5 rounded-full bg-amber-500/80 shrink-0" />
+                                      <span className="text-sm leading-snug">
+                                        {tradeoff}
+                                      </span>
+                                    </motion.li>
+                                  ),
+                                )}
+                              </ul>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  )}
+
+                  {/* Resources Skeleton */}
+                  {isFetchingResources && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-6 pt-4"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                        <h3 className="text-xl font-bold tracking-tight text-foreground animate-pulse">
+                          Curating Live Resources...
                         </h3>
-                        <p className="text-2xl md:text-3xl font-bold leading-tight text-foreground">
-                          {decision.primaryRecommendation}
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {[1, 2, 3, 4].map((i) => (
+                          <div
+                            key={i}
+                            className="h-40 bg-muted/30 rounded-xl border border-border/30 animate-pulse"
+                          ></div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {resourceError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl text-center font-medium shadow-sm backdrop-blur-sm"
+                    >
+                      {resourceError}
+                    </motion.div>
+                  )}
+
+                  {/* Resources Results Card */}
+                  {resources && resources.length > 0 && !isFetchingResources && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="space-y-6 pt-6 border-t border-border/40"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                          <Network className="w-6 h-6 text-blue-500" />
+                          Curated Live Resources
+                        </h3>
+                        <p className="text-xs font-medium text-muted-foreground flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                          </span>
+                          Powered by SkillPatch / DeepAPI
                         </p>
                       </div>
 
-                      <CardContent className="p-0">
-                        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/50">
-                          <div className="p-6 md:p-8 space-y-4 bg-background/30">
-                            <h4 className="font-bold text-lg flex items-center gap-2 text-foreground">
-                              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                              Why It Fits
-                            </h4>
-                            <p className="text-muted-foreground leading-relaxed text-base">
-                              {decision.whyItFits}
-                            </p>
-                          </div>
-
-                          <div className="p-6 md:p-8 space-y-4 bg-background/30">
-                            <h4 className="font-bold text-lg flex items-center gap-2 text-foreground">
-                              <AlertTriangle className="w-5 h-5 text-amber-500" />
-                              Trade-offs Accepted
-                            </h4>
-                            <ul className="space-y-3">
-                              {decision.tradeoffsAccepted.map(
-                                (tradeoff, index) => (
-                                  <motion.li
-                                    initial={{ opacity: 0, x: 10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 * index }}
-                                    key={index}
-                                    className="flex items-start gap-3 text-muted-foreground bg-card p-3 rounded-lg border border-border/40 shadow-sm"
-                                  >
-                                    <div className="mt-1 w-1.5 h-1.5 rounded-full bg-amber-500/80 shrink-0" />
-                                    <span className="text-sm leading-snug">
-                                      {tradeoff}
-                                    </span>
-                                  </motion.li>
-                                ),
-                              )}
-                            </ul>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-
-                {/* Resources Skeleton */}
-                {isFetchingResources && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="space-y-6 pt-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-                      <h3 className="text-xl font-bold tracking-tight text-foreground animate-pulse">
-                        Curating Live Resources...
-                      </h3>
-                    </div>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className="h-40 bg-muted/30 rounded-xl border border-border/30 animate-pulse"
-                        ></div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {resourceError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-xl text-center font-medium shadow-sm backdrop-blur-sm"
-                  >
-                    {resourceError}
-                  </motion.div>
-                )}
-
-                {/* Resources Results Card */}
-                {resources && resources.length > 0 && !isFetchingResources && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="space-y-6 pt-6 border-t border-border/40"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <h3 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                        <Network className="w-6 h-6 text-blue-500" />
-                        Curated Live Resources
-                      </h3>
-                      <p className="text-xs font-medium text-muted-foreground flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                        </span>
-                        Powered by SkillPatch / DeepAPI
-                      </p>
-                    </div>
-
-                    <motion.div
-                      variants={{
-                        show: { transition: { staggerChildren: 0.1 } },
-                      }}
-                      initial="hidden"
-                      animate="show"
-                      className="grid gap-4 md:grid-cols-2"
-                    >
-                      {resources.map((resource, index) => (
-                        <motion.div
-                          key={index}
-                          variants={{
-                            hidden: { opacity: 0, y: 20 },
-                            show: {
-                              opacity: 1,
-                              y: 0,
-                              transition: { type: "spring", bounce: 0.4 },
-                            },
-                          }}
-                          whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                          className="h-full"
-                        >
-                          <Card className="flex flex-col h-full bg-card/80 backdrop-blur-sm border-border/50 hover:border-blue-500/40 shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
-                            <CardContent className="p-5 flex-grow space-y-3">
-                              <div className="flex items-start justify-between gap-2">
-                                <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors">
-                                  {resource.title}
-                                </h4>
-                                <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <motion.div
+                        variants={{
+                          show: { transition: { staggerChildren: 0.1 } },
+                        }}
+                        initial="hidden"
+                        animate="show"
+                        className="grid gap-4 md:grid-cols-2"
+                      >
+                        {resources.map((resource, index) => (
+                          <motion.div
+                            key={index}
+                            variants={{
+                              hidden: { opacity: 0, y: 20 },
+                              show: {
+                                opacity: 1,
+                                y: 0,
+                                transition: { type: "spring", bounce: 0.4 },
+                              },
+                            }}
+                            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                            className="h-full"
+                          >
+                            <Card className="flex flex-col h-full bg-card/80 backdrop-blur-sm border-border/50 hover:border-blue-500/40 shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
+                              <CardContent className="p-5 flex-grow space-y-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors">
+                                    {resource.title}
+                                  </h4>
+                                  <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                                  {resource.snippet}
+                                </p>
+                              </CardContent>
+                              <div className="p-4 pt-0 mt-auto">
+                                <a
+                                  href={resource.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex w-full items-center justify-center rounded-lg bg-secondary/50 border border-border/50 px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted hover:text-blue-500 transition-all group/link"
+                                >
+                                  Open Resource
+                                  <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover/link:opacity-100 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
+                                </a>
                               </div>
-                              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                                {resource.snippet}
-                              </p>
-                            </CardContent>
-                            <div className="p-4 pt-0 mt-auto">
-                              <a
-                                href={resource.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex w-full items-center justify-center rounded-lg bg-secondary/50 border border-border/50 px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted hover:text-blue-500 transition-all group/link"
-                              >
-                                Open Resource
-                                <ArrowRight className="w-4 h-4 ml-2 opacity-50 group-hover/link:opacity-100 group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-all" />
-                              </a>
-                            </div>
-                          </Card>
-                        </motion.div>
-                      ))}
+                            </Card>
+                          </motion.div>
+                        ))}
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )}
+                  )}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
