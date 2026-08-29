@@ -110,6 +110,18 @@ export default function Home() {
       if (!response.ok) throw new Error("Failed to generate decision");
 
       const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setError(
+            `Quota limit reached! Please wait about ${data.retryAfter || 35} seconds before trying again.`,
+          );
+        } else {
+          setError(data.error || "Failed to generate decision.");
+        }
+        return;
+      }
+
       setDecision(data);
     } catch (err) {
       setError("Oops! Something went wrong. Please try again.");
@@ -178,7 +190,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="flex flex-col w-full lg:h-[calc(100vh-4rem)] overflow-hidden">
       {/* Dismissible Hero Banner */}
       <AnimatePresence>
         {showBanner && (
@@ -693,7 +705,7 @@ export default function Home() {
                             <Network className="w-6 h-6 text-blue-500" />
                             Curated Live Resources
                           </h3>
-                          <p className="text-xs font-medium text-muted-foreground flex items-center gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20">
+                          <p className="text-xs font-medium text-muted-foreground flex  gap-2 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 items-center justify-between">
                             <span className="relative flex h-2 w-2">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
@@ -730,7 +742,7 @@ export default function Home() {
                               <Card className="flex flex-col h-full bg-card/80 backdrop-blur-sm border-border/50 hover:border-blue-500/40 shadow-sm hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 group">
                                 <CardContent className="p-5 flex-grow space-y-3">
                                   <div className="flex items-start justify-between gap-2">
-                                    <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors">
+                                    <h4 className="font-semibold leading-tight line-clamp-2 group-hover:text-blue-500 transition-colors py-2">
                                       {resource.title}
                                     </h4>
                                     <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
