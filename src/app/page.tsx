@@ -338,12 +338,38 @@ export default function Home() {
                         </motion.div>
                       ) : (
                         <span className="flex items-center justify-center w-full">
-                          Analyze & Decide 🚀
+                          Analyze & Decide
                           <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                         </span>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none"></div>
                     </Button>
+                    {/* Clear Form Button */}
+                    <AnimatePresence>
+                      {(skills || goal || constraints) && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{
+                            opacity: 1,
+                            height: "auto",
+                            marginTop: 12,
+                          }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleReset}
+                            className="w-full text-xs font-medium text-muted-foreground hover:text-foreground h-8 gap-1.5"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            Clear Form
+                          </Button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </CardFooter>
                 </form>
               </Card>
@@ -539,7 +565,7 @@ export default function Home() {
                         className="h-9 gap-1.5 font-medium text-muted-foreground hover:text-foreground"
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
-                        Reset
+                        New Decision
                       </Button>
                     </div>
                   )}
