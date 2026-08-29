@@ -38,13 +38,16 @@ export default function Home() {
   const [goal, setGoal] = useState("");
   const [constraints, setConstraints] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [hasCopied, setHasCopied] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+
   const [decision, setDecision] = useState<{
     primaryRecommendation: string;
     whyItFits: string;
     tradeoffsAccepted: string[];
   } | null>(null);
 
-  const [isFetchingResources, setIsFetchingResources] = useState(false);
   const [resources, setResources] = useState<
     | {
         title: string;
@@ -53,13 +56,10 @@ export default function Home() {
       }[]
     | null
   >(null);
+  const [isFetchingResources, setIsFetchingResources] = useState(false);
   const [resourceError, setResourceError] = useState("");
 
-  const [error, setError] = useState("");
-  const [hasCopied, setHasCopied] = useState(false);
-  const [showBanner, setShowBanner] = useState(true);
-
-  // Auto-fetch resources when decision is ready
+  // Auto-trigger Effect
   useEffect(() => {
     if (decision?.primaryRecommendation && !resources && !isFetchingResources) {
       handleFetchResources(decision.primaryRecommendation);
@@ -73,15 +73,11 @@ export default function Home() {
     try {
       const response = await fetch("/api/action", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch resources");
-      }
+      if (!response.ok) throw new Error("Failed to fetch resources");
 
       const data = await response.json();
       setResources(data.resources.results);
@@ -91,11 +87,6 @@ export default function Home() {
     } finally {
       setIsFetchingResources(false);
     }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await executeDecision(skills, goal, constraints);
   };
 
   const executeDecision = async (s: string, g: string, c: string) => {
@@ -110,15 +101,11 @@ export default function Home() {
     try {
       const response = await fetch("/api/decide", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ skills: s, goal: g, constraints: c }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate decision");
-      }
+      if (!response.ok) throw new Error("Failed to generate decision");
 
       const data = await response.json();
       setDecision(data);
@@ -128,6 +115,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await executeDecision(skills, goal, constraints);
   };
 
   const handlePreset = (
@@ -158,9 +150,10 @@ export default function Home() {
     setHasCopied(true);
     setTimeout(() => setHasCopied(false), 2000);
   };
+
   return (
-    <div className="flex flex-col w-full h-[calc(100vh-4rem)] overflow-x-hidden">
-      {/* Top Hero Banner */}
+    <div className="flex flex-col w-full h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Dismissible Hero Banner */}
       <AnimatePresence>
         {showBanner && (
           <motion.div
@@ -168,9 +161,9 @@ export default function Home() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0, overflow: "hidden" }}
             transition={{ duration: 0.3 }}
-            className="w-full relative z-40 border-b border-border/40 bg-background/80 backdrop-blur-md"
+            className="w-full relative z-40 border-b border-border/40 bg-background/80 backdrop-blur-md shrink-0"
           >
-            <div className="max-w-7xl mx-auto px-4 py-8 md:py-12 relative flex flex-col items-center justify-center text-center">
+            <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 relative flex flex-col items-center justify-center text-center">
               <button
                 onClick={() => setShowBanner(false)}
                 className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground hover:bg-muted/80 rounded-full transition-colors"
@@ -179,16 +172,16 @@ export default function Home() {
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="inline-flex items-center justify-center p-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-4">
+              <div className="inline-flex items-center justify-center p-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-3">
                 <span className="flex items-center text-[10px] md:text-xs font-bold uppercase tracking-wider px-2 py-0.5">
                   <span className="mr-1.5 text-sm">⚡</span>
                   Anti-Analysis Paralysis
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 pb-2 mb-4">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-foreground to-foreground/70 pb-2 mb-2">
                 One Decision. Zero Fluff.
               </h1>
-              <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed">
+              <p className="text-sm md:text-base text-muted-foreground font-medium max-w-2xl leading-relaxed">
                 Search engines give you 100 tabs. AI chatbots give you lists of
                 options.{" "}
                 <strong className="text-foreground">DecisionMind</strong>{" "}
@@ -200,21 +193,20 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* Split-Screen Body Container */}
       <div className="relative flex w-full flex-1 overflow-hidden flex-col lg:flex-row">
         {/* Background Gradients */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-500/10 dark:bg-purple-900/20 blur-[120px]" />
           <div className="absolute top-[20%] right-[-10%] w-[30%] h-[50%] rounded-full bg-indigo-500/10 dark:bg-indigo-900/20 blur-[100px]" />
           <div className="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] rounded-full bg-pink-500/10 dark:bg-pink-900/10 blur-[120px]" />
-
-          {/* Subtle Grid overlay */}
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] dark:opacity-[0.05] mix-blend-overlay"></div>
         </div>
 
-        {/* Left Panel - Control Panel */}
-        <div className="w-full h-full overflow-hidden lg:w-[35%] lg:min-w-[400px] lg:max-w-[480px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-6 md:p-8 flex flex-col relative z-20 shadow-2xl lg:shadow-none overflow-y-hidden">
-          <div className="space-y-6 w-full h-full flex flex-col">
-            <div className="flex items-center gap-2 pb-2">
+        {/* Left Panel */}
+        <div className="w-full lg:w-[35%] lg:min-w-[400px] lg:max-w-[480px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-4 md:p-6 lg:p-8 flex flex-col relative z-20 shadow-2xl lg:shadow-none shrink-0 h-full overflow-hidden">
+          <div className="space-y-4 md:space-y-6 w-full h-full flex flex-col">
+            <div className="flex items-center gap-2 pb-1 shrink-0">
               <Sparkles className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-bold tracking-tight">
                 Set Trajectory
@@ -225,12 +217,12 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative group transition-all duration-300 flex-grow flex flex-col"
+              className="relative group transition-all duration-300 flex-grow flex flex-col min-h-0"
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md pointer-events-none"></div>
-              <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-xl overflow-hidden flex-grow flex flex-col">
+              <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-xl overflow-hidden flex-grow flex flex-col h-full">
                 <form onSubmit={handleSubmit} className="flex flex-col h-full">
-                  <CardContent className="space-y-6 p-6 flex-grow">
+                  <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6 flex-grow overflow-y-auto scrollbar-thin">
                     <div className="space-y-2 relative group/field">
                       <label
                         htmlFor="skills"
@@ -286,7 +278,7 @@ export default function Home() {
                     </div>
                   </CardContent>
 
-                  <CardFooter className="p-6 pt-0 mt-auto">
+                  <CardFooter className="p-4 md:p-6 pt-0 mt-auto shrink-0">
                     <Button
                       type="submit"
                       size="lg"
@@ -312,7 +304,6 @@ export default function Home() {
                           <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                         </span>
                       )}
-                      {/* Subtle hover gradient effect on button */}
                       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover/btn:opacity-100 transition-opacity pointer-events-none"></div>
                     </Button>
                   </CardFooter>
@@ -322,8 +313,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right Panel - Canvas */}
-        <div className="flex-1 p-6 md:p-8 lg:p-12 relative z-10 h-full overflow-y-auto w-full">
+        {/* Right Panel Canvas */}
+        <div className="flex-1 p-6 md:p-8 lg:p-12 overflow-y-auto scrollbar-thin scroll-smooth relative z-10 h-full w-full">
           <AnimatePresence mode="wait">
             {!isLoading && !decision && (
               <motion.div
@@ -332,7 +323,7 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col items-center justify-center h-full max-w-3xl mx-auto space-y-12 py-10"
+                className="flex flex-col items-center justify-center min-h-full max-w-3xl mx-auto space-y-6 py-8"
               >
                 <div className="text-center space-y-6 flex flex-col items-center">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center shadow-inner border border-white/10 dark:border-white/5 mb-2 relative">
@@ -343,7 +334,7 @@ export default function Home() {
                     <h2 className="text-3xl font-bold tracking-tight text-foreground">
                       1-Click Demo Presets
                     </h2>
-                    <p className="text-muted-foreground text-lg max-w-lg">
+                    <p className="text-muted-foreground text-lg max-w-lg mx-auto">
                       Click any scenario below to test the engine instantly.
                     </p>
                   </div>
@@ -356,9 +347,9 @@ export default function Home() {
                       whileTap={{ scale: 0.98 }}
                       onClick={() =>
                         handlePreset(
-                          "React/Node.js, 4 YOE",
-                          "FAANG AI Engineer",
-                          "10 hrs/week, $500 budget for courses",
+                          "React/Node.js",
+                          "FAANG AI Eng",
+                          "10 hrs/wk, $500",
                         )
                       }
                       className="p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 hover:bg-indigo-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
@@ -385,7 +376,7 @@ export default function Home() {
                         handlePreset(
                           "Python/Django",
                           "Launch SaaS in 30 days",
-                          "Solo dev, $0 infra budget",
+                          "Solo, $0 budget",
                         )
                       }
                       className="p-5 rounded-xl border border-purple-500/20 bg-purple-500/5 hover:bg-purple-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
@@ -410,9 +401,9 @@ export default function Home() {
                       whileTap={{ scale: 0.98 }}
                       onClick={() =>
                         handlePreset(
-                          "SQL/Excel, no coding",
-                          "Machine Learning Engineer",
-                          "No math background, self-paced learning",
+                          "SQL/Excel",
+                          "ML Engineer",
+                          "No math bg, self-paced",
                         )
                       }
                       className="p-5 rounded-xl border border-pink-500/20 bg-pink-500/5 hover:bg-pink-500/10 text-left space-y-3 transition-colors relative overflow-hidden group shadow-sm"
