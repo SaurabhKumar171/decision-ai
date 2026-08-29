@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Brain, 
-  Target, 
-  SlidersHorizontal, 
-  CheckCircle2, 
+import {
+  Brain,
+  Target,
+  SlidersHorizontal,
+  CheckCircle2,
   AlertTriangle,
   ArrowRight,
   ExternalLink,
@@ -19,7 +19,7 @@ import {
   Network,
   Copy,
   RotateCcw,
-  X
+  X,
 } from "lucide-react";
 import {
   Card,
@@ -159,8 +159,7 @@ export default function Home() {
     setTimeout(() => setHasCopied(false), 2000);
   };
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-4rem)] overflow-x-hidden">
-      
+    <div className="flex flex-col w-full h-[calc(100vh-4rem)] overflow-x-hidden">
       {/* Top Hero Banner */}
       <AnimatePresence>
         {showBanner && (
@@ -179,7 +178,7 @@ export default function Home() {
               >
                 <X className="w-5 h-5" />
               </button>
-              
+
               <div className="inline-flex items-center justify-center p-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md mb-4">
                 <span className="flex items-center text-[10px] md:text-xs font-bold uppercase tracking-wider px-2 py-0.5">
                   <span className="mr-1.5 text-sm">⚡</span>
@@ -190,7 +189,11 @@ export default function Home() {
                 One Decision. Zero Fluff.
               </h1>
               <p className="text-base md:text-lg text-muted-foreground font-medium max-w-2xl leading-relaxed">
-                Search engines give you 100 tabs. AI chatbots give you lists of options. <strong className="text-foreground">DecisionMind</strong> evaluates your exact constraints and makes ONE definitive choice for you.
+                Search engines give you 100 tabs. AI chatbots give you lists of
+                options.{" "}
+                <strong className="text-foreground">DecisionMind</strong>{" "}
+                evaluates your exact constraints and makes ONE definitive choice
+                for you.
               </p>
             </div>
           </motion.div>
@@ -209,12 +212,13 @@ export default function Home() {
         </div>
 
         {/* Left Panel - Control Panel */}
-        <div className="w-full lg:w-[35%] lg:min-w-[400px] lg:max-w-[480px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-6 md:p-8 flex flex-col relative z-20 shadow-2xl lg:shadow-none overflow-y-auto">
+        <div className="w-full h-full overflow-hidden lg:w-[35%] lg:min-w-[400px] lg:max-w-[480px] border-b lg:border-b-0 lg:border-r border-border/40 bg-background/50 backdrop-blur-sm p-6 md:p-8 flex flex-col relative z-20 shadow-2xl lg:shadow-none overflow-y-hidden">
           <div className="space-y-6 w-full h-full flex flex-col">
-            
             <div className="flex items-center gap-2 pb-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-bold tracking-tight">Set Trajectory</h2>
+              <h2 className="text-xl font-bold tracking-tight">
+                Set Trajectory
+              </h2>
             </div>
 
             <motion.div
@@ -225,10 +229,7 @@ export default function Home() {
             >
               <div className="absolute -inset-0.5 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl opacity-0 group-focus-within:opacity-20 transition duration-500 blur-md pointer-events-none"></div>
               <Card className="relative border-border/50 bg-card/90 backdrop-blur-xl shadow-xl overflow-hidden flex-grow flex flex-col">
-                <form
-                  onSubmit={handleSubmit}
-                  className="flex flex-col h-full"
-                >
+                <form onSubmit={handleSubmit} className="flex flex-col h-full">
                   <CardContent className="space-y-6 p-6 flex-grow">
                     <div className="space-y-2 relative group/field">
                       <label
@@ -322,7 +323,7 @@ export default function Home() {
         </div>
 
         {/* Right Panel - Canvas */}
-        <div className="flex-1 p-6 md:p-8 lg:p-12 overflow-y-auto relative z-10 min-h-[500px] w-full">
+        <div className="flex-1 p-6 md:p-8 lg:p-12 relative z-10 h-full overflow-y-auto w-full">
           <AnimatePresence mode="wait">
             {!isLoading && !decision && (
               <motion.div
@@ -369,8 +370,10 @@ export default function Home() {
                         <span>🚀</span> FAANG AI Transition
                       </div>
                       <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
-                        Skills: React/Node.js<br/>
-                        Goal: FAANG AI Eng<br/>
+                        Skills: React/Node.js
+                        <br />
+                        Goal: FAANG AI Eng
+                        <br />
                         Constraints: 10 hrs/wk, $500
                       </div>
                     </motion.button>
@@ -394,8 +397,10 @@ export default function Home() {
                         <span>💻</span> Solo SaaS Stack
                       </div>
                       <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
-                        Skills: Python<br/>
-                        Goal: Launch in 30d<br/>
+                        Skills: Python
+                        <br />
+                        Goal: Launch in 30d
+                        <br />
                         Constraints: Solo, $0 budget
                       </div>
                     </motion.button>
@@ -419,8 +424,10 @@ export default function Home() {
                         <span>🎓</span> Analyst to ML
                       </div>
                       <div className="text-sm text-muted-foreground line-clamp-3 leading-relaxed relative z-10">
-                        Skills: SQL/Excel<br/>
-                        Goal: ML Engineer<br/>
+                        Skills: SQL/Excel
+                        <br />
+                        Goal: ML Engineer
+                        <br />
                         Constraints: No math bg
                       </div>
                     </motion.button>
